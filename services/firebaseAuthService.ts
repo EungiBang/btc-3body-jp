@@ -29,6 +29,24 @@ export interface DeviceLicense {
   deviceType?: 'pc' | 'lite'; // 기기 타입 식별자 추가
 }
 
+// 도메인을 기반으로 한국/미국/일본의 국가 로케일을 판단하는 헬퍼 함수
+export const detectCountry = (): 'ko' | 'us' | 'ja' => {
+  const params = new URLSearchParams(window.location.search);
+  const countryParam = params.get('country');
+  if (countryParam === 'ja' || countryParam === 'us' || countryParam === 'ko') {
+    return countryParam;
+  }
+
+  const hostname = window.location.hostname;
+  if (hostname.includes('jp') || hostname.includes('japan')) {
+    return 'ja';
+  }
+  if (hostname.includes('us') || hostname.includes('wellness')) {
+    return 'us';
+  }
+  return 'ko';
+};
+
 // 4. 관리자 전용 제어 함수
 export const getAllDevices = async (): Promise<DeviceLicense[]> => {
   const [pcSnap, liteSnap] = await Promise.all([
@@ -164,7 +182,8 @@ export const updateSystemSettings = async (autoApproveCode: string, liteAutoAppr
 
 // 2. 지역(Region) 및 지점(Branch) 관리
 export const getRegions = async (): Promise<Region[]> => {
-  const q = query(collection(db, 'regions'));
+  const currentCountry = detectCountry();
+  const q = query(collection(db, 'regions'), where('country', '==', currentCountry));
   const snapshot = await getDocs(q);
   const regions: Region[] = [];
   snapshot.forEach((doc) => regions.push({ id: doc.id, ...doc.data() } as Region));
@@ -172,8 +191,14 @@ export const getRegions = async (): Promise<Region[]> => {
 };
 
 export const getBranches = async (regionId?: string): Promise<Branch[]> => {
+  const currentCountry = detectCountry();
   const branchesRef = collection(db, 'branches');
-  const q = regionId ? query(branchesRef, where('regionId', '==', regionId)) : query(branchesRef);
+  let q;
+  if (regionId) {
+    q = query(branchesRef, where('regionId', '==', regionId), where('country', '==', currentCountry));
+  } else {
+    q = query(branchesRef, where('country', '==', currentCountry));
+  }
   const snapshot = await getDocs(q);
   const branches: Branch[] = [];
   snapshot.forEach((doc) => branches.push({ id: doc.id, ...doc.data() } as Branch));
