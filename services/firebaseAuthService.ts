@@ -180,8 +180,129 @@ export const updateSystemSettings = async (autoApproveCode: string, liteAutoAppr
   await setDoc(docRef, updateData, { merge: true });
 };
 
+const initialRegions = [
+  { id: 'jp-sapporo', name: '札幌', order: 1 },
+  { id: 'jp-tokyo1', name: '東京1', order: 2 },
+  { id: 'jp-tokyo2', name: '東京2', order: 3 },
+  { id: 'jp-tokyo3', name: '東京3', order: 4 },
+  { id: 'jp-yokohama', name: '横浜', order: 5 },
+  { id: 'jp-nagoya1', name: '名古屋1', order: 6 },
+  { id: 'jp-nagoya2', name: '名古屋2', order: 7 },
+  { id: 'jp-toyota', name: '豊田', order: 8 },
+  { id: 'jp-kyotonara', name: '京都奈良', order: 9 },
+  { id: 'jp-osaka1', name: '大阪1', order: 10 },
+  { id: 'jp-osaka2', name: '大阪2', order: 11 },
+  { id: 'jp-kobe', name: '神戸', order: 12 },
+  { id: 'jp-okayama', name: '岡山', order: 13 },
+  { id: 'jp-hiroshima', name: '広島', order: 14 },
+  { id: 'jp-kyushu', name: '九州', order: 15 },
+  { id: 'jp-kakuremino', name: 'カクレミノ家', order: 16 }
+];
+
+const initialBranches = [
+  { id: 'br-sapporo', regionId: 'jp-sapporo', name: '札幌' },
+  { id: 'br-shinjuku', regionId: 'jp-tokyo1', name: '新宿四谷' },
+  { id: 'br-ginza', regionId: 'jp-tokyo1', name: '銀座' },
+  { id: 'br-kichijoji', regionId: 'jp-tokyo1', name: '吉祥寺' },
+  { id: 'br-tokorozawa', regionId: 'jp-tokyo1', name: '所沢' },
+  { id: 'br-hachioji', regionId: 'jp-tokyo1', name: '八王子' },
+  { id: 'br-nakano', regionId: 'jp-tokyo1', name: '中野' },
+  { id: 'br-kinshicho', regionId: 'jp-tokyo2', name: '錦糸町' },
+  { id: 'br-funabashi', regionId: 'jp-tokyo2', name: '船橋' },
+  { id: 'br-matsudo', regionId: 'jp-tokyo2', name: '松戸' },
+  { id: 'br-iwaki', regionId: 'jp-tokyo2', name: '(C)いわき' },
+  { id: 'br-omiya', regionId: 'jp-tokyo3', name: '大宮' },
+  { id: 'br-ikebukuro', regionId: 'jp-tokyo3', name: '池袋' },
+  { id: 'br-narimasu', regionId: 'jp-tokyo3', name: '成増' },
+  { id: 'br-yokohama', regionId: 'jp-yokohama', name: '橫浜' },
+  { id: 'br-machida', regionId: 'jp-yokohama', name: '町田' },
+  { id: 'br-kamiooka', regionId: 'jp-yokohama', name: '上大岡' },
+  { id: 'br-yokosuka', regionId: 'jp-yokohama', name: '横須賀' },
+  { id: 'br-tsujido', regionId: 'jp-yokohama', name: '辻堂' },
+  { id: 'br-kanayama', regionId: 'jp-nagoya1', name: '金山' },
+  { id: 'br-gifu', regionId: 'jp-nagoya1', name: '岐阜' },
+  { id: 'br-shizuoka', regionId: 'jp-nagoya1', name: '静岡' },
+  { id: 'br-issha', regionId: 'jp-nagoya1', name: '一社' },
+  { id: 'br-okazaki', regionId: 'jp-nagoya1', name: '(C)岡崎' },
+  { id: 'br-nagoyakusunoki', regionId: 'jp-nagoya1', name: '(C)名古屋楠' },
+  { id: 'br-nagoya', regionId: 'jp-nagoya2', name: '名古屋' },
+  { id: 'br-yagoto', regionId: 'jp-nagoya2', name: '八事' },
+  { id: 'br-toyota', regionId: 'jp-toyota', name: '豊田' },
+  { id: 'br-aratamabashi', regionId: 'jp-toyota', name: '新瑞橋' },
+  { id: 'br-kyotoshi-jo', regionId: 'jp-kyotonara', name: '京都四条烏丸' },
+  { id: 'br-fushimi', regionId: 'jp-kyotonara', name: '伏見' },
+  { id: 'br-nara', regionId: 'jp-kyotonara', name: '奈良' },
+  { id: 'br-kashihara', regionId: 'jp-kyotonara', name: '橿原' },
+  { id: 'br-yoshino', regionId: 'jp-kyotonara', name: '吉野' },
+  { id: 'br-shugakuin', regionId: 'jp-kyotonara', name: '修学院' },
+  { id: 'br-zeze', regionId: 'jp-kyotonara', name: '膳所' },
+  { id: 'br-ikoma', regionId: 'jp-kyotonara', name: '生駒' },
+  { id: 'br-seiwadai', regionId: 'jp-kyotonara', name: '星和台' },
+  { id: 'br-kyobashi', regionId: 'jp-osaka1', name: '京橋' },
+  { id: 'br-hirakata', regionId: 'jp-osaka1', name: '枚方' },
+  { id: 'br-sakaihigashi', regionId: 'jp-osaka1', name: '堺東' },
+  { id: 'br-neyagawa', regionId: 'jp-osaka1', name: '寝屋川' },
+  { id: 'br-ishibashi', regionId: 'jp-osaka2', name: '石橋' },
+  { id: 'br-umeda', regionId: 'jp-osaka2', name: '梅田' },
+  { id: 'br-mikage', regionId: 'jp-kobe', name: '御影' },
+  { id: 'br-nishinomiya', regionId: 'jp-kobe', name: '西宮' },
+  { id: 'br-rokkodo', regionId: 'jp-kobe', name: '六甲道' },
+  { id: 'br-kobeshinnagata', regionId: 'jp-kobe', name: '神戶新長田' },
+  { id: 'br-himeji', regionId: 'jp-kobe', name: '姫路' },
+  { id: 'br-tarumi', regionId: 'jp-kobe', name: '垂水' },
+  { id: 'br-takarazuka', regionId: 'jp-kobe', name: '宝塚' },
+  { id: 'br-akashi', regionId: 'jp-kobe', name: '明石' },
+  { id: 'br-yumoto', regionId: 'jp-kobe', name: '(C)ゆもと' },
+  { id: 'br-koshien-guchi', regionId: 'jp-kobe', name: '(C)甲子園口' },
+  { id: 'br-harimaotsu', regionId: 'jp-kobe', name: '(C)はりま大津' },
+  { id: 'br-okayama', regionId: 'jp-okayama', name: '岡山' },
+  { id: 'br-hiroshima', regionId: 'jp-hiroshima', name: '広島' },
+  { id: 'br-yaga', regionId: 'jp-kyushu', name: '矢賀' },
+  { id: 'br-tenjin', regionId: 'jp-kyushu', name: '天神' },
+  { id: 'br-kokura', regionId: 'jp-kyushu', name: '小倉' },
+  { id: 'br-shimosone', regionId: 'jp-kyushu', name: '下曽根' },
+  { id: 'br-takasu', regionId: 'jp-kyushu', name: '高須' },
+  { id: 'br-gotanda', regionId: 'jp-kakuremino', name: '五反田店' },
+  { id: 'br-fujisawa', regionId: 'jp-kakuremino', name: '藤沢店' },
+  { id: 'br-oosu', regionId: 'jp-kakuremino', name: '大須店' },
+  { id: 'br-naraekimae', regionId: 'jp-kakuremino', name: '奈良駅前店' },
+  { id: 'br-shinsaibashi', regionId: 'jp-kakuremino', name: '心斎橋店' },
+  { id: 'br-tennoji', regionId: 'jp-kakuremino', name: '天왕지점' },
+  { id: 'br-tennoji', regionId: 'jp-kakuremino', name: '天王寺店' },
+  { id: 'br-kobemotomachi', regionId: 'jp-kakuremino', name: '神戸元町店' },
+  { id: 'br-hiroshimaten', regionId: 'jp-kakuremino', name: '広島店' }
+];
+
+const ensureInitialRegionsAndBranches = async (): Promise<void> => {
+  const regionsRef = collection(db, 'regions');
+  const snap = await getDocs(query(regionsRef));
+  if (snap.empty) {
+    console.log('[Seed] 일본 전용 초기 지역/지점 데이터 시딩 시작');
+    for (const r of initialRegions) {
+      await setDoc(doc(db, 'regions', r.id), r);
+    }
+    for (const b of initialBranches) {
+      await setDoc(doc(db, 'branches', b.id), {
+        ...b,
+        allowedLicenses: 5,
+        liteAllowedLicenses: 5
+      });
+    }
+    const settingsRef = doc(db, 'system_settings', 'config');
+    const settingsSnap = await getDoc(settingsRef);
+    if (!settingsSnap.exists()) {
+      await setDoc(settingsRef, {
+        autoApproveCode: 'BTCADMIN2026',
+        liteAutoApproveCode: 'BTCLITE2026'
+      });
+    }
+    console.log('[Seed] 일본 전용 초기 데이터 시딩 완료');
+  }
+};
+
 // 2. 지역(Region) 및 지점(Branch) 관리
 export const getRegions = async (): Promise<Region[]> => {
+  await ensureInitialRegionsAndBranches();
   const q = query(collection(db, 'regions'));
   const snapshot = await getDocs(q);
   const regions: Region[] = [];
