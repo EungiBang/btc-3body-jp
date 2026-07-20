@@ -1,5 +1,6 @@
-// US region/center authentication screen for BTC 3-Body 7-Code AI Wellness Center (Online version)
+// 지점 장비 등록 및 시스템 인증 절차를 수행하는 화면 컴포넌트
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getRegions, getBranches, requestDeviceRegistration, Region, Branch } from '../services/firebaseAuthService';
 import pkg from '../package.json';
 
@@ -8,6 +9,7 @@ interface BranchAuthProps {
 }
 
 const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
+  const { t } = useTranslation();
   const [regions, setRegions] = useState<Region[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [filteredBranches, setFilteredBranches] = useState<Branch[]>([]);
@@ -32,13 +34,13 @@ const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
         setBranches(bData);
       } catch (err) {
         console.error('Failed to load regions/branches', err);
-        setError('Unable to connect to the server. Please check your internet connection.');
+        setError(t('branchAuth.connError'));
       } finally {
         setInitLoading(false);
       }
     };
     loadData();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (formData.regionId) {
@@ -66,7 +68,7 @@ const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.regionId || !formData.branchId || !formData.adminName || !formData.contact || !formData.authCode) {
-      setError('Please fill in all fields.');
+      setError(t('branchAuth.fillAlert'));
       return;
     }
 
@@ -93,7 +95,7 @@ const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
       if (result.success) {
         window.location.reload();
       } else {
-        setError(result.error || 'Authentication failed.');
+        setError(result.error || t('branchAuth.authFailed'));
       }
     } catch (err: any) {
       console.error('Registration failed:', err);
@@ -108,7 +110,7 @@ const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900">
         <div className="text-indigo-400 font-bold flex items-center gap-3">
           <div className="w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-          Connecting to server...
+          {t('branchAuth.connectingServer')}
         </div>
       </div>
     );
@@ -123,49 +125,49 @@ const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
           <div className="w-16 h-16 bg-slate-800 border-2 border-indigo-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
             <i className="fas fa-shield-alt text-2xl"></i>
           </div>
-          <h2 className="text-2xl font-black text-white tracking-tight">BTC 3-Body 7-Code AI Wellness Center</h2>
-          <p className="text-indigo-300 mt-2 text-sm font-medium">v{pkg.version} Device Authentication & Center Registration <span className="text-amber-400 font-bold ml-1">(Online)</span></p>
+          <h2 className="text-2xl font-black text-white tracking-tight">{t('branchAuth.title')}</h2>
+          <p className="text-indigo-300 mt-2 text-sm font-medium">v{pkg.version} {t('branchAuth.subtitle')} <span className="text-amber-400 font-bold ml-1">(Online)</span></p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">Select Region</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">{t('branchAuth.selectRegion')}</label>
             <select 
               className="w-full px-4 py-3.5 bg-slate-900/50 border border-slate-600/50 text-white rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
               value={formData.regionId} 
               onChange={e => setFormData({...formData, regionId: e.target.value})}
             >
-              <option value="" className="bg-slate-800 text-slate-400">Select a region</option>
+              <option value="" className="bg-slate-800 text-slate-400">{t('branchAuth.selectRegionPlaceholder')}</option>
               {regions.map(r => (
                 <option key={r.id} value={r.id} className="bg-slate-800">{r.name}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">Select Center</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">{t('branchAuth.selectCenter')}</label>
             <select 
               className="w-full px-4 py-3.5 bg-slate-900/50 border border-slate-600/50 text-white rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none disabled:opacity-30 transition-all"
               value={formData.branchId} 
               onChange={e => setFormData({...formData, branchId: e.target.value})}
               disabled={!formData.regionId}
             >
-              <option value="" className="bg-slate-800 text-slate-400">Select a center</option>
+              <option value="" className="bg-slate-800 text-slate-400">{t('branchAuth.selectCenterPlaceholder')}</option>
               {filteredBranches.map(b => (
                 <option key={b.id} value={b.id} className="bg-slate-800">{b.name}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">Center Manager</label>
-            <input type="text" className="w-full px-4 py-3.5 bg-slate-900/50 border border-slate-600/50 text-white rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600" placeholder="e.g. John Doe" value={formData.adminName} onChange={e => setFormData({...formData, adminName: e.target.value})} />
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">{t('branchAuth.manager')}</label>
+            <input type="text" className="w-full px-4 py-3.5 bg-slate-900/50 border border-slate-600/50 text-white rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600" placeholder={t('branchAuth.managerPlaceholder')} value={formData.adminName} onChange={e => setFormData({...formData, adminName: e.target.value})} />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">Contact Number</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">{t('branchAuth.contact')}</label>
             <input type="text" className="w-full px-4 py-3.5 bg-slate-900/50 border border-slate-600/50 text-white rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600" placeholder="(000) 000-0000" value={formData.contact} onChange={handleContactChange} maxLength={14} />
           </div>
           <div>
-            <label className="block text-xs font-bold text-indigo-400 mb-1.5 ml-1">System Authorization Code</label>
-            <input type="password" className="w-full px-4 py-3.5 bg-indigo-950/30 border border-indigo-500/30 text-white rounded-xl focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none font-bold tracking-widest transition-all placeholder:text-indigo-900/50" placeholder="Enter security code" value={formData.authCode} onChange={e => setFormData({...formData, authCode: e.target.value})} />
+            <label className="block text-xs font-bold text-indigo-400 mb-1.5 ml-1">{t('branchAuth.authCode')}</label>
+            <input type="password" className="w-full px-4 py-3.5 bg-indigo-950/30 border border-indigo-500/30 text-white rounded-xl focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none font-bold tracking-widest transition-all placeholder:text-indigo-900/50" placeholder={t('branchAuth.authCodePlaceholder')} value={formData.authCode} onChange={e => setFormData({...formData, authCode: e.target.value})} />
           </div>
 
           {error && (
@@ -179,7 +181,7 @@ const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
             disabled={isLoading || !formData.regionId || !formData.branchId || !formData.adminName || !formData.contact || !formData.authCode}
             className="w-full mt-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-bold rounded-xl hover:from-indigo-500 hover:to-indigo-400 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Establishing secure connection...' : 'Request System Authorization'}
+            {isLoading ? t('branchAuth.loadingText') : t('branchAuth.submitBtn')}
           </button>
         </form>
       </div>

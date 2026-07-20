@@ -352,5 +352,24 @@
     "startTimer": "{{duration}}초 시작",
     "captureCountdown": "5초 뒤 촬영",
     "switchCamera": "카메라 방향 전환"
+  },
+  "branchAuth": {
+    "title": "지점 장치 인증 & 등록",
+    "subtitle": "장치 인증 및 센터 등록",
+    "selectRegion": "지역 선택",
+    "selectRegionPlaceholder": "지역을 선택해 주세요",
+    "selectCenter": "센터 선택",
+    "selectCenterPlaceholder": "센터를 선택해 주세요",
+    "manager": "센터 담당자",
+    "managerPlaceholder": "예: 홍길동",
+    "contact": "연락처",
+    "authCode": "시스템 인증 코드",
+    "authCodePlaceholder": "보안 코드를 입력해 주세요",
+    "submitBtn": "시스템 인증 요청",
+    "loadingText": "안전한 연결을 수립 중입니다...",
+    "connectingServer": "서버에 연결 중입니다...",
+    "fillAlert": "모든 필드를 입력해 주세요.",
+    "authFailed": "인증에 실패했습니다.",
+    "connError": "서버에 연결할 수 없습니다. 인터넷 연결 상태를 확인해 주세요."
   }
 }

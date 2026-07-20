@@ -608,5 +608,24 @@
       "r6": "Delayed cognitive response latency; reduced prefrontal inhibitory control; expression wrinkles visible around the eyes/forehead.",
       "r7": "Slight delay in working memory recall (hippocampus); facial fatigue indicators and reduced skin elasticity detected."
     }
+  },
+  "branchAuth": {
+    "title": "BTC 3-Body 7-Code AI Wellness Center",
+    "subtitle": "Device Authentication & Center Registration",
+    "selectRegion": "Select Region",
+    "selectRegionPlaceholder": "Select a region",
+    "selectCenter": "Select Center",
+    "selectCenterPlaceholder": "Select a center",
+    "manager": "Center Manager",
+    "managerPlaceholder": "e.g. John Doe",
+    "contact": "Contact Number",
+    "authCode": "System Authorization Code",
+    "authCodePlaceholder": "Enter security code",
+    "submitBtn": "Request System Authorization",
+    "loadingText": "Establishing secure connection...",
+    "connectingServer": "Connecting to server...",
+    "fillAlert": "Please fill in all fields.",
+    "authFailed": "Authentication failed.",
+    "connError": "Unable to connect to the server. Please check your internet connection."
   }
 }

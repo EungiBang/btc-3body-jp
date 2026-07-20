@@ -363,5 +363,24 @@
     "startTimer": "{{duration}}秒開始",
     "captureCountdown": "5秒後撮影",
     "switchCamera": "カメラ方向の転換"
+  },
+  "branchAuth": {
+    "title": "店舗端末認証・登録",
+    "subtitle": "端末認証 & 店舗登録",
+    "selectRegion": "地域選択",
+    "selectRegionPlaceholder": "地域を選択してください",
+    "selectCenter": "店舗選択",
+    "selectCenterPlaceholder": "店舗を選択してください",
+    "manager": "担当者名",
+    "managerPlaceholder": "例：山田太郎",
+    "contact": "連絡先",
+    "authCode": "システム認証コード",
+    "authCodePlaceholder": "セキュリティコードを入力",
+    "submitBtn": "システム認証をリクエスト",
+    "loadingText": "安全な接続を確立しています...",
+    "connectingServer": "サーバーに接続しています...",
+    "fillAlert": "すべてのフィールドを入力してください。",
+    "authFailed": "認証に失敗しました。",
+    "connError": "サーバーに接続できません。インターネットの接続状態を確認してください。"
   }
 }
