@@ -1,0 +1,21 @@
+{
+  "name": "BT 3바디7코드 야외 측정(Lite)",
+  "short_name": "3바디 Lite",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "description": "야외 및 외부 행사용 BT 3바디7코드 AI 건강 측정 서비스",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
