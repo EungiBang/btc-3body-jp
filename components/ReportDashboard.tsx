@@ -23,17 +23,69 @@ interface ReportDashboardProps {
   onRestart: () => void;
 }
 
-const SEVEN_CODE_NAMES: Record<number, { name: string; region: string; symptom: string; hint: string; label: string; location: string }> = {
-  1: { name: '1-Code (Perineum)', region: 'Lower Body/Pelvis/Kidney', symptom: 'Basic energy deficiency, leg weakness, and spinal support instability', hint: 'Charge basic energy through squats and grounding training by pressing soles to the floor and strengthening lower abdomen.', label: 'Basic Energy', location: 'Perineum' },
-  2: { name: '2-Code (Lower Danjeon)', region: 'Lower Abdomen/Danjeon/Large Intestine', symptom: 'Weakened vitality, cold lower abdomen, and stagnated energy due to poor bowel function', hint: 'Ignite the lower Danjeon fire with Danjeon tapping and abdominal breathing meditation.', label: 'Emotional Flow', location: 'Lower Danjeon' },
-  3: { name: '3-Code (Jungwan)', region: 'Stomach/Solar Plexus/Liver', symptom: 'Reduced willpower, chronic indigestion, and lack of drive', hint: 'Boost your willpower through Jungwan relaxation and core strengthening exercises.', label: 'Drive & Will', location: 'Jungwan' },
-  4: { name: '4-Code (Danjung)', region: 'Chest/Heart/Lung', symptom: 'Emotional stagnation, chest tightness, and chronic accumulated anger/stress', hint: 'Clear emotional congestion through chest-opening meditation and relaxing breathing.', label: 'Emotional Balance', location: 'Danjung' },
-  5: { name: '5-Code (Honmun)', region: 'Throat/Shoulders/Thyroid', symptom: 'Stagnant expression, chronic neck and shoulder stiffness, and difficulty communicating feelings', hint: 'Relax the throat passage with neck/shoulder release movements and vocal meditation.', label: 'Communication', location: 'Honmun' },
-  6: { name: '6-Code (Indang)', region: 'Brow/Brain/Eyes', symptom: 'Diminished intuition, heavy head, and reduced control over frontal lobe inhibition', hint: 'Clear your mind with Indang massage and brain gym exercises.', label: 'Focus & Insight', location: 'Brow' },
-  7: { name: '7-Code (Baekhoe)', region: 'Crown/Brainwaves/Pineal Gland', symptom: 'Unstable integrated energy, sleep disturbances, and brainwave imbalance overload', hint: 'Align your center through Baekhoe brain breathing and brainwave relaxation meditation.', label: 'Life Direction', location: 'Baekhoe' }
+interface SevenCodeLangDetail {
+  name: string;
+  region: string;
+  symptom: string;
+  hint: string;
+  label: string;
+  location: string;
+}
+
+const SEVEN_CODE_NAMES_MULTI: Record<number, { ko: SevenCodeLangDetail; en: SevenCodeLangDetail; ja: SevenCodeLangDetail }> = {
+  1: {
+    ko: { name: '1코드 (회음)', region: '하체/골반/신장', symptom: '기초 에너지 부족 및 하체 근력 약화, 척추 지지력 불안정', hint: '스쿼트 및 발바닥을 바닥에 밀착하고 아랫배를 강화하는 지지력 훈련을 통해 기초 에너지를 충전합니다.', label: '기초 에너지', location: '회음' },
+    en: { name: '1-Code (Perineum)', region: 'Lower Body/Pelvis/Kidney', symptom: 'Basic energy deficiency, leg weakness, and spinal support instability', hint: 'Charge basic energy through squats and grounding training by pressing soles to the floor and strengthening lower abdomen.', label: 'Basic Energy', location: 'Perineum' },
+    ja: { name: '1コード (会陰)', region: '下半身/骨盤/腎臓', symptom: '基礎エネルギー不足、下半身の筋力低下、脊椎支持力の不安定さ', hint: 'スクワットや、足の裏を床に密着させて下腹部を強化하는 グラウンディング訓練を通じて、基礎エネルギーを充電します。', label: '基礎エネルギー', location: '会陰' }
+  },
+  2: {
+    ko: { name: '2코드 (단전)', region: '아랫배/단전/대장', symptom: '생명력 저하 및 하복부 냉증, 장 기능 저하로 인한 에너지 정체', hint: '단전치기와 복식호흡 명상을 통해 아랫배 단전의 불을 지핍니다.', label: '감정 흐름', location: '단전' },
+    en: { name: '2-Code (Lower Danjeon)', region: 'Lower Abdomen/Danjeon/Large Intestine', symptom: 'Weakened vitality, cold lower abdomen, and stagnated energy due to poor bowel function', hint: 'Ignite the lower Danjeon fire with Danjeon tapping and abdominal breathing meditation.', label: 'Emotional Flow', location: 'Lower Danjeon' },
+    ja: { name: '2コード (下丹田)', region: '下腹部/丹田/大腸', symptom: '生命力の低下、下腹部の冷え、腸機能の低下によるエネルギーの滞り', hint: '丹田たたきや腹式呼吸瞑想を通じて、下丹田の火を灯します。', label: '感情の流れ', location: '下丹田' }
+  },
+  3: {
+    ko: { name: '3코드 (중완)', region: '위장/명치/간', symptom: '의지력 저하, 만성 소화불량 및 의욕 저하', hint: '중완 이완 및 코어 강화 운동을 통해 실행력과 의지력을 강화합니다.', label: '의지 & 실행', location: '중완' },
+    en: { name: '3-Code (Jungwan)', region: 'Stomach/Solar Plexus/Liver', symptom: 'Reduced willpower, chronic indigestion, and lack of drive', hint: 'Boost your willpower through Jungwan relaxation and core strengthening exercises.', label: 'Drive & Will', location: 'Jungwan' },
+    ja: { name: '3コード (中脘)', region: '胃/みぞおち/肝臓', symptom: '意志力の低下、慢性的な消化不良、意欲の減退', hint: '中脘の弛緩やコア強化運動を通じて、実行力と意志力を強化します。', label: '意志＆実行', location: '中脘' }
+  },
+  4: {
+    ko: { name: '4코드 (단중)', region: '가슴/심장/폐', symptom: '감정적 정체 및 가슴 답답함, 만성 누적 화/스트레스', hint: '가슴을 여는 흉부 이완 명상과 편안한 호흡을 통해 감정적 억압을 해소합니다.', label: '감정 균형', location: '단중' },
+    en: { name: '4-Code (Danjung)', region: 'Chest/Heart/Lung', symptom: 'Emotional stagnation, chest tightness, and chronic accumulated anger/stress', hint: 'Clear emotional congestion through chest-opening meditation and relaxing breathing.', label: 'Emotional Balance', location: 'Danjung' },
+    ja: { name: '4コード (壇中)', region: '胸/心臓/肺', symptom: '感情の滞り、胸のつかえ、慢性的に蓄積された怒り・ストレス', hint: '胸を開く胸部弛緩瞑想や、楽な呼吸を通じて感情の抑圧を解消します。', label: '感情のバランス', location: '壇中' }
+  },
+  5: {
+    ko: { name: '5코드 (혼문)', region: '목/어깨/갑상선', symptom: '표현력 정체 및 만성 목/어깨 결림, 감정 표출의 어려움', hint: '목/어깨 이완 체조와 소리 명상을 통해 목구멍 통로를 이완합니다.', label: '의사소통', location: '혼문' },
+    en: { name: '5-Code (Honmun)', region: 'Throat/Shoulders/Thyroid', symptom: 'Stagnant expression, chronic neck and shoulder stiffness, and difficulty communicating feelings', hint: 'Relax the throat passage with neck/shoulder release movements and vocal meditation.', label: 'Communication', location: 'Honmun' },
+    ja: { name: '5コード (喉門)', region: '喉/肩/甲状腺', symptom: '表現力の滞り、慢性的な首・肩のこり、感情表現の難しさ', hint: '首・肩の弛緩体操や発声瞑想を通じて、喉の通り道をリラックスさせます。', label: '意思疎通', location: '喉門' }
+  },
+  6: {
+    ko: { name: '6코드 (인당)', region: '이마/뇌/눈', symptom: '직관력 저하 및 머리 무거움, 전두엽 억제 통제력 저하', hint: '인당 마사지 및 브레인짐 운동을 통해 생각을 비우고 집중력을 높입니다.', label: '집중 & 통찰', location: '인당' },
+    en: { name: '6-Code (Indang)', region: 'Brow/Brain/Eyes', symptom: 'Diminished intuition, heavy head, and reduced control over frontal lobe inhibition', hint: 'Clear your mind with Indang massage and brain gym exercises.', label: 'Focus & Insight', location: 'Brow' },
+    ja: { name: '6コード (印堂)', region: '額/脳/目', symptom: '直観力の低下、頭の重さ、前頭葉の抑制制御力の低下', hint: '印堂のマッサージやブレインジム運動を通じて、考えを整理し集中力を高めます。', label: '集中＆洞察', location: '印堂' }
+  },
+  7: {
+    ko: { name: '7코드 (백회)', region: '정수리/뇌파/송과선', symptom: '통합 에너지 불안정 및 수면 장애, 뇌파 불균형 과부하', hint: '백회 뇌호흡 및 뇌파 진동 이완 명상을 통해 중심을 바로잡습니다.', label: '삶의 방향', location: '백회' },
+    en: { name: '7-Code (Baekhoe)', region: 'Crown/Brainwaves/Pineal Gland', symptom: 'Unstable integrated energy, sleep disturbances, and brainwave imbalance overload', hint: 'Align your center through Baekhoe brain breathing and brainwave relaxation meditation.', label: 'Life Direction', location: 'Baekhoe' },
+    ja: { name: '7コード (百会)', region: '頭頂/脳波/松果体', symptom: '統合エネルギーの不安定さ、睡眠障害、뇌파 불균형의 과부하', hint: '百会脳呼吸や脳波振動弛緩瞑想を通じて、中心を整えます。', label: '人生の方向性', location: '百会' }
+  }
 };
 
+
 const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRestart }) => {
+  const lang = i18n.language || 'ko';
+  const isEn = lang.startsWith('en');
+  const isJa = lang.startsWith('ja');
+
+  // 다국어 7코드 명칭 객체 생성
+  const activeCodeNames = (() => {
+    const multi = SEVEN_CODE_NAMES_MULTI;
+    const res: Record<number, { name: string; region: string; symptom: string; hint: string; label: string; location: string }> = {};
+    for (let i = 1; i <= 7; i++) {
+      res[i] = isJa ? multi[i].ja : (isEn ? multi[i].en : multi[i].ko);
+    }
+    return res;
+  })();
+
   const [copied, setCopied] = useState(false);
   const [zoomLevel, setZoomLevel] = useState<number>(1.15);
   const [isSimpleView, setIsSimpleView] = useState(true); // Simple view / detailed view toggle state
@@ -73,7 +125,7 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
     const mbtiDesc = mbtiInfo ? mbtiInfo.description : 'Analyzed Energy MBTI type based on assessment.';
     
     const activeWeakestCode = getWeakestFromReport();
-    const codeInfo = SEVEN_CODE_NAMES[activeWeakestCode] || SEVEN_CODE_NAMES[4];
+    const codeInfo = activeCodeNames[activeWeakestCode] || activeCodeNames[4];
 
     const threeBody = safeReport.threeBodyAnalysis || {
       body: { score: 70, description: 'Posture alignment is slightly misaligned.' },
@@ -153,7 +205,7 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
   };
 
   const activeWeakestCode = getWeakestFromReport();
-  const codeInfo = SEVEN_CODE_NAMES[activeWeakestCode] || SEVEN_CODE_NAMES[4];
+  const codeInfo = activeCodeNames[activeWeakestCode] || activeCodeNames[4];
 
   const specialized = (() => {
     if (!safeReport.sevenCodeAnalysis) {
@@ -342,14 +394,10 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
   const sevenCodeList = getSevenCodeList();
 
   const getChakraGrade = (score: number) => {
-    if (score >= 80) return { text: 'Stable', badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
-    if (score >= 60) return { text: 'Warning', badgeClass: 'bg-amber-50 text-amber-700 border-amber-200' };
-    return { text: 'Focused', badgeClass: 'bg-rose-50 text-rose-700 border-rose-200 font-black' };
+    if (score >= 80) return { text: isJa ? '安定' : (isEn ? 'Stable' : '안정'), badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+    if (score >= 60) return { text: isJa ? '警告' : (isEn ? 'Warning' : '경고'), badgeClass: 'bg-amber-50 text-amber-700 border-amber-200' };
+    return { text: isJa ? '要集中' : (isEn ? 'Focused' : '집중'), badgeClass: 'bg-rose-50 text-rose-700 border-rose-200 font-black' };
   };
-
-  const lang = i18n.language || 'ko';
-  const isEn = lang.startsWith('en');
-  const isJa = lang.startsWith('ja');
 
   return (
     <div className="flex-1 bg-white overflow-auto print:p-0 print:overflow-visible relative text-slate-800 animate-fade-in-up">
@@ -832,9 +880,9 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
           {/* 7-Code energy analysis */}
           <div className="mt-10 pt-10 border-t border-white/10">
             <div className="text-center mb-8">
-              <span className="text-amber-400 text-sm font-bold uppercase tracking-[0.3em]">7CODE ENERGY</span>
-              <h3 className="text-3xl font-black mt-3">{'7-Code Energy Analysis'}</h3>
-              <p className="text-slate-300 text-base mt-2 font-medium">{'Analyzing your energy flow through 7 key codes'}</p>
+              <span className="text-amber-400 text-sm font-bold uppercase tracking-[0.3em]">{isJa ? '7コードエネルギー' : (isEn ? '7CODE ENERGY' : '7코드 에너지')}</span>
+              <h3 className="text-3xl font-black mt-3">{isJa ? '7-Code エネルギー分析' : (isEn ? '7-Code Energy Analysis' : '7코드 에너지 분석')}</h3>
+              <p className="text-slate-300 text-base mt-2 font-medium">{isJa ? '7つの主要なコードを通じてあなたのエネルギーの流れを分析します' : (isEn ? 'Analyzing your energy flow through 7 key codes' : '7가지 핵심 코드를 통해 당신의 에너지 흐름을 분석합니다')}</p>
             </div>
             
             <div className="space-y-4">
@@ -843,7 +891,6 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
                 const isWeakest = item.id === activeWeakestCode;
                 const grade = getChakraGrade(item.score);
                 
-                const activeCodeNames = SEVEN_CODE_NAMES;
                 const labelText = activeCodeNames[item.id]?.name || item.label;
 
                 return (
@@ -858,7 +905,7 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
                             {labelText}
                             {isWeakest && (
                               <span className="text-[9px] font-black text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
-                                🚨 Weakest
+                                {isJa ? '🚨 最弱' : (isEn ? '🚨 Weakest' : '🚨 최약')}
                               </span>
                             )}
                           </span>
@@ -894,16 +941,27 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
         {/* 3-Body 7-Code core analysis */}
         {(() => {
           const activeWeakestCode = getWeakestFromReport();
-          const activeCodeNames = SEVEN_CODE_NAMES;
           const codeInfo = activeCodeNames[activeWeakestCode] || activeCodeNames[4];
           return (
             <section className="bg-slate-900 border border-slate-800 rounded-3xl p-6 text-left shadow-lg relative overflow-hidden">
               <div className="absolute right-0 top-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
               <h3 className="text-lg font-black text-amber-400 mb-3 flex items-center gap-2">
-                <span>💡</span> Today's Core Analysis (Weakest Code Charge Guide)
+                <span>💡</span> {isJa ? '本日のコア分析 (弱点コード充電ガイド)' : (isEn ? "Today's Core Analysis (Weakest Code Charge Guide)" : '오늘의 핵심 분석 (방전 코드 충전 가이드)')}
               </h3>
               <p className="text-sm font-semibold text-slate-300 leading-relaxed mb-4">
-                Out of your 7 energy codes, the one requiring activation is <strong className="text-white bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700">{codeInfo.name}</strong>.
+                {isJa ? (
+                  <>
+                    7つのエネルギーコードのうち、活性化が必要なのは <strong className="text-white bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700">{codeInfo.name}</strong> です。
+                  </>
+                ) : isEn ? (
+                  <>
+                    Out of your 7 energy codes, the one requiring activation is <strong className="text-white bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700">{codeInfo.name}</strong>.
+                  </>
+                ) : (
+                  <>
+                    7가지 에너지 코드 중 활성화가 필요한 코드는 <strong className="text-white bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700">{codeInfo.name}</strong>입니다.
+                  </>
+                )}
               </p>
             </section>
           );
@@ -960,7 +1018,7 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
                 }}
                 className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black py-4 px-6 rounded-2xl transition-all shadow-lg active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer text-sm"
               >
-                <span>{'🌱 Apply for 1:1 Coaching'}</span>
+                <span>{isJa ? '🌱 1:1コーチングを申請する' : (isEn ? '🌱 Apply for 1:1 Coaching' : '🌱 1:1 맞춤 코칭 신청')}</span>
                 <i className="fas fa-chevron-right text-xs"></i>
               </button>
               <button
@@ -973,7 +1031,7 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
                 }}
                 className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black py-4 px-6 rounded-2xl transition-all shadow-lg active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer text-sm"
               >
-                <span>{'💬 Apply for In-depth Counseling'}</span>
+                <span>{isJa ? '💬 専門相談を申請する' : (isEn ? '💬 Apply for In-depth Counseling' : '💬 심층 전문 상담 신청')}</span>
                 <i className="fas fa-chevron-right text-xs"></i>
               </button>
             </div>
