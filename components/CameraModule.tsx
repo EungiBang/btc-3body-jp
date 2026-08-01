@@ -64,8 +64,8 @@ const CameraModule: React.FC<CameraModuleProps> = ({ onCapture, guidelineType, a
   const { reps: autoReps, feedback: poseFeedback, isModelLoaded: isPoseLoaded, footDrops, swayScore, formScore, postureData, validation } = usePoseEstimation(
     videoRef, 
     skeletonCanvasRef, 
-    testTimer !== null && (guidelineType === 'squat' || guidelineType === 'pushup') || ['front', 'side', 'arm_raise', 'flexibility'].includes(guidelineType), 
-    ['squat', 'pushup', 'front', 'side', 'arm_raise', 'flexibility'].includes(guidelineType) ? (guidelineType as any) : 'none',
+    (testTimer !== null && (guidelineType === 'squat' || guidelineType === 'pushup' || guidelineType === 'balance')) || ['front', 'side', 'arm_raise', 'flexibility'].includes(guidelineType), 
+    ['squat', 'pushup', 'balance', 'front', 'side', 'arm_raise', 'flexibility'].includes(guidelineType) ? (guidelineType as any) : 'none',
     activePerfInfo
   );
 
@@ -75,7 +75,7 @@ const CameraModule: React.FC<CameraModuleProps> = ({ onCapture, guidelineType, a
 
   const [bypassAILoad, setBypassAILoad] = useState(false);
 
-  const needsPoseModel = ['squat', 'pushup', 'front', 'side', 'arm_raise', 'flexibility'].includes(guidelineType);
+  const needsPoseModel = ['squat', 'pushup', 'balance', 'front', 'side', 'arm_raise', 'flexibility'].includes(guidelineType);
   // Only wait for pose model on necessary steps
   const isAILoading = needsPoseModel && !isPoseLoaded && !bypassAILoad;
 
@@ -516,8 +516,8 @@ const CameraModule: React.FC<CameraModuleProps> = ({ onCapture, guidelineType, a
       : t('camera.startTestSpeech', { duration: timerDuration });
     speak(narration);
 
-    // 5-second preparation countdown first
-    const PREP_DURATION = 5;
+    // 5-second (or 8-second for balance test) preparation countdown first
+    const PREP_DURATION = guidelineType === 'balance' ? 8 : 5;
     setCountdown(PREP_DURATION);
     let lastPrepSpoken = PREP_DURATION + 1;
 

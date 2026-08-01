@@ -8,6 +8,13 @@ interface UserInfoFormProps {
   onSubmit: (info: UserInfo) => void;
 }
 
+// 전각 숫자를 반각 숫자로 변환하는 유틸리티 함수
+const toHalfWidth = (str: string): string => {
+  return str.replace(/[０-９]/g, (s) => {
+    return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+  });
+};
+
 const UserInfoForm: React.FC<UserInfoFormProps> = ({ onSubmit }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<UserInfo>({
@@ -99,7 +106,8 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ onSubmit }) => {
   };
 
   const handleBirthChange = (field: 'year' | 'month', value: string) => {
-    const onlyNum = value.replace(/[^0-9]/g, '');
+    const convertedValue = toHalfWidth(value);
+    const onlyNum = convertedValue.replace(/[^0-9]/g, '');
     
     // 월: 1~12 범위만 허용
     if (field === 'month') {

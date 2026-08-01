@@ -1283,7 +1283,7 @@ const AssessmentFlow: React.FC = () => {
 
           {/* Progress bar */}
           <div className="w-full h-3 bg-gray-800 rounded-full mb-4 shrink-0">
-            <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full w-full shadow-[0_0_15px_rgba(245,158,11,0.6)]" />
+            <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full w-full shadow-[0_0_15px_rgba(16,185,129,0.6)]" />
           </div>
 
           {/* Needs selection grid */}
@@ -1296,7 +1296,7 @@ const AssessmentFlow: React.FC = () => {
                    onClick={() => toggleHealthNeed(need.key)}
                    className={`p-5 md:p-6 rounded-2xl text-lg md:text-xl font-black transition-all duration-200 transform hover:scale-[1.02] active:scale-95 leading-snug break-keep ${
                      isSelected
-                       ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_0_30px_rgba(245,158,11,0.4)] border-2 border-white/30'
+                       ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_30px_rgba(16,185,129,0.4)] border-2 border-white/30'
                        : 'bg-gray-800 text-gray-200 hover:bg-gray-700 border-2 border-gray-700 hover:border-gray-500 shadow-lg'
                    }`}
                 >
@@ -1314,7 +1314,7 @@ const AssessmentFlow: React.FC = () => {
                 value={customHealthNeed}
                 onChange={(e) => setCustomHealthNeed(e.target.value)}
                 placeholder="または、健康上の懸念を直接入力してください..."
-                className="flex-1 px-4 py-3 rounded-xl bg-gray-800 text-white border-2 border-gray-700 focus:border-amber-500 outline-none text-base font-bold placeholder:text-gray-500"
+                className="flex-1 px-4 py-3 rounded-xl bg-gray-800 text-white border-2 border-gray-700 focus:border-emerald-500 outline-none text-base font-bold placeholder:text-gray-500"
               />
             </div>
           </div>
@@ -1337,7 +1337,7 @@ const AssessmentFlow: React.FC = () => {
             </button>
             <button
               onClick={handleHealthNeedsComplete}
-              className="flex-1 px-10 py-4 rounded-2xl text-xl font-black transition-all shadow-xl hover:shadow-amber-500/40 active:scale-95 bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+              className="flex-1 px-10 py-4 rounded-2xl text-xl font-black transition-all shadow-xl hover:shadow-emerald-500/40 active:scale-95 bg-gradient-to-r from-emerald-500 to-teal-500 text-white"
             >
               <i className="fas fa-check-circle mr-2" /> {isReceptionOnly ? "完了" : "次へ"}
             </button>
@@ -1802,6 +1802,74 @@ const AssessmentFlow: React.FC = () => {
           className="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all disabled:opacity-50"
         >
           Complete
+        </button>
+      </Modal>
+
+      <Modal 
+        isOpen={balanceInputModal.isOpen}
+        title="片足立ち測定結果の確認"
+        message="AI測定による基準値が表示されています。必要に応じて手動で確認・編集してください。"
+        onClose={() => {}}
+      >
+        <div className="mt-4 space-y-5">
+          <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
+            <div className="text-[11px] font-bold text-slate-400 mb-1">📊 AI測定による基準値</div>
+            <div className="flex gap-4 text-sm text-slate-600">
+              <span>足落下の回数: <strong className="text-indigo-600">{balanceInputModal.aiFootDrops}回</strong></span>
+              <span>揺れの強さ (AI): <strong className="text-indigo-600">{balanceInputModal.aiSwayScore}%</strong></span>
+            </div>
+          </div>
+  
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">
+              <i className="fas fa-redo mr-1 text-indigo-500"></i> 足落下の回数 (手動)
+            </label>
+            <input 
+              type="number"
+              min="0"
+              max="20"
+              className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 text-slate-700 font-bold"
+              value={manualFootDrops}
+              onChange={(e) => setManualFootDrops(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">
+              <i className="fas fa-wave-square mr-1 text-indigo-500"></i> 揺れの強さ (手動)
+            </label>
+            <div className="flex flex-col gap-2">
+              {['1', '2', '3', '4', '5'].map(level => {
+                const labelMap: Record<string, string> = {
+                  '1': '極めて安定 (0%)',
+                  '2': '安定 (20%)',
+                  '3': '普通 (40%)',
+                  '4': 'やや不安定 (60%)',
+                  '5': '極めて不安定 (80%+)'
+                };
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setManualSwayLevel(level)}
+                    className={`py-3 px-4 rounded-xl border-2 text-sm font-bold transition-all text-left ${
+                      manualSwayLevel === level 
+                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm' 
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-200'
+                    }`}
+                  >
+                    {labelMap[level]}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        <button 
+          onClick={handleBalanceSubmit}
+          className="w-full mt-5 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all"
+        >
+          完了
         </button>
       </Modal>
 

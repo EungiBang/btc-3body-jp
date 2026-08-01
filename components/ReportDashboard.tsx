@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { BodyReport, CapturedImage } from '../types';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import FeedbackPanel from './FeedbackPanel';
+import i18n from '../i18n';
 import { BRAND_NAME, SUB_NAME } from '@shared/constants/brand';
 import { getEnergyMbtiCode, ENERGY_MBTI_DATA } from '@shared/ai/scoring/mbti';
 import { EnergyMbtiWebCard } from './EnergyMbtiWebCard';
@@ -346,7 +347,9 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
     return { text: 'Focused', badgeClass: 'bg-rose-50 text-rose-700 border-rose-200 font-black' };
   };
 
-  const isEn = true;
+  const lang = i18n.language || 'ko';
+  const isEn = lang.startsWith('en');
+  const isJa = lang.startsWith('ja');
 
   return (
     <div className="flex-1 bg-white overflow-auto print:p-0 print:overflow-visible relative text-slate-800 animate-fade-in-up">
@@ -479,16 +482,36 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
                         'Mild': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
                         'Warning': { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
                         'Severe': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+                        '정상': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+                        '경미': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
+                        '주의': { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+                        '심함': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
                       };
                       
-                      const severityEn: Record<string, string> = { 'Normal': 'Normal', 'Mild': 'Mild', 'Warning': 'Warning', 'Severe': 'Severe' };
                       const cfg = severityConfig[item?.severity] || severityConfig['Mild'];
                       return (
                         <div key={i} className={`p-3 rounded-xl border ${cfg.border} ${cfg.bg}`}>
                           <div className="flex items-center justify-between mb-1">
                             <h5 className="font-bold text-slate-800 text-sm">{sanitize(item?.issue)}</h5>
                             <span className={`px-2 py-0.5 rounded-md text-xs font-black ${cfg.text} ${cfg.bg} border ${cfg.border}`}>
-                              {isEn ? (severityEn[item?.severity] || item?.severity) : item?.severity}
+                              {(() => {
+                                const sev = item?.severity || 'Mild';
+                                const mapping: Record<string, { ko: string, en: string, ja: string }> = {
+                                  '정상': { ko: '정상', en: 'Normal', ja: '正常' },
+                                  '경미': { ko: '경미', en: 'Mild', ja: '軽度' },
+                                  '주의': { ko: '주의', en: 'Warning', ja: '注意' },
+                                  '심함': { ko: '심함', en: 'Severe', ja: '深刻' },
+                                  'Normal': { ko: '정상', en: 'Normal', ja: '正常' },
+                                  'Mild': { ko: '경미', en: 'Mild', ja: '軽度' },
+                                  'Warning': { ko: '주의', en: 'Warning', ja: '注意' },
+                                  'Severe': { ko: '심함', en: 'Severe', ja: '深刻' }
+                                };
+                                const entry = mapping[sev];
+                                if (!entry) return sev;
+                                if (isJa) return entry.ja;
+                                if (isEn) return entry.en;
+                                return entry.ko;
+                              })()}
                             </span>
                           </div>
                           <div className="text-xs text-slate-500 mb-1">
@@ -598,17 +621,21 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
                         {isBalanceTest && (
                           <div className="mt-3 p-4 bg-white/80 border border-rose-200/60 rounded-xl space-y-2">
                             <h6 className="text-xs font-black text-rose-600 flex items-center gap-1">
-                              <span>🎯</span> {'Importance and Causes of Single-Leg Stance with Eyes Closed'}
+                              <span>🎯</span> {isJa ? '目を閉じて片足立ちの重要性と原因' : (isEn ? 'Importance and Causes of Single-Leg Stance with Eyes Closed' : '눈감고 한발서기의 중요성 및 원인')}
                             </h6>
                             <p className="text-xs text-slate-600 leading-relaxed font-semibold">
-                              {isEn 
+                              {isJa
+                                ? '目を閉じて片足立ちは、視覚情報を遮断することで、身体の固有受容感覚（体性感覚）、内耳の平衡感覚（前庭感覚）、그리고 이를 조율하는 소뇌/뇌 기능을 종합 평가하는 중요한 노화 스크리닝 지표입니다.'
+                                : isEn 
                                 ? 'Single-leg stance with eyes closed is a crucial aging screening metric that checks your body\'s proprioception (somatosensory), inner ear balance (vestibular), and cerebellum/brain function that coordinates them by blocking vision.'
-                                : 'The single-leg stance with eyes closed is a critical aging screening indicator. By eliminating visual input, it comprehensively evaluates your <strong>proprioceptive (somatic) sense</strong>, the inner ear\'s <strong>vestibular balance</strong>, and the cerebellum/brain function that coordinates them.'}
+                                : '눈을 감고 한 발로 서는 동작은 시각적 피드백을 차단함으로써, 몸의 고유 수용성 감각(체성감각), 내이의 전정기관(평형감각), 그리고 이를 조율하는 소뇌 및 뇌 기능을 종합적으로 평가하는 중요한 노화 스크리닝 지표입니다.'}
                             </p>
                             <p className="text-[11px] text-slate-500 leading-relaxed">
-                              {isEn
+                              {isJa
+                                ? 'この指標が平均以下または低い場合は、単なる筋力低下だけでなく、身体のバランスを維持する太もも下部および体幹（コア）筋肉の支持機能が低下したか、固有受容神経の伝達リズムが遅延したこと、あるいは体のアライメントの歪みが蓄積したことを意味します。また、不眠や慢性疲労などによる脳疲労が溜まっている場合も、バランス維持能力が大幅に低下します。'
+                                : isEn
                                 ? 'If this metric is average or low, it means not only a lack of simple muscular strength, but also that support for the lower thigh and core muscles that keep the body balanced is weakened, and the transmission rhythm of proprioceptive nerves has slowed down or misalignment of the body has accumulated. Also, balance maintenance significantly decreases when brain fatigue is high due to insomnia, fatigue, etc.'
-                                : 'An average or low score does not simply mean muscle weakness. It indicates decreased support from lower-body thigh muscles and core strength, slowed proprioceptive nerve signal transmission, and accumulated postural misalignment. Additionally, sleep deprivation and chronic fatigue When brain fatigue from sleep deprivation or chronic stress is high, balance maintenance capacity significantly decreases.'}
+                                : '이 지표가 평균 이하 또는 낮다면, 단순히 근력이 약한 것뿐만 아니라 몸의 균형을 유지해 주는 허벅지 하부 및 코어 근육의 지지력이 약화되었거나 고유수용성 신경의 전달 주기가 지연되었음을 의미합니다. 또한 불면이나 만성 피로 등으로 인해 뇌 피로가 높을 때에도 균형 유지 능력이 크게 감소합니다.'}
                             </p>
                           </div>
                         )}
@@ -886,7 +913,7 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
         <section className="text-left">
           <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
             <i className="fas fa-magic text-indigo-550"></i>
-            🔮 16 Energy Types
+            {isJa ? '🔮 16のエネルギータイプ' : (isEn ? '🔮 16 Energy Types' : '🔮 16가지 에너지 유형')}
           </h3>
           <EnergyMbtiWebCard 
             mbtiCode={mbtiCode} 
@@ -903,17 +930,22 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
             <div className="w-14 h-14 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <i className="fas fa-question-circle text-2xl animate-pulse text-indigo-400"></i>
             </div>
-            <h4 className="text-white text-xl font-black mb-3">{'Apply for Personalized Coaching & Counseling'}</h4>
+            <h4 className="text-white text-xl font-black mb-3">{isJa ? '1:1パーソナルコーチング＆専門相談の申請' : (isEn ? 'Apply for Personalized Coaching & Counseling' : '1:1 맞춤형 코칭 및 상담 신청')}</h4>
             <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium">
-              {isEn ? (
+              {isJa ? (
+                <>
+                  エネルギーが最も不足している <strong>{codeInfo.name}</strong> ({codeInfo.region}) について、1:1パーソナルコーチングや詳細な専門相談を申請してみませんか？<br />
+                  コーチングや相談を申請すると、詳細分析レポートや3ボディ統合ソリューションガイド、総合評価レポートの全内容がアンロックされます。
+                </>
+              ) : isEn ? (
                 <>
                   Would you like 1:1 coaching or consulting for your weakest energy area, <strong>{codeInfo.name}</strong> ({codeInfo.region})?<br />
                   Apply to fully unlock the detailed report, 3-body solution guides, and comprehensive review.
                 </>
               ) : (
                 <>
-                  Would you like 1:1 personalized coaching for your depleted <strong>{codeInfo.name}</strong> ({codeInfo.region}), or schedule an in-depth professional consultation?<br />
-                  Scheduling coaching or counseling will fully unlock your detailed analysis report, 3-Body integrated solution guide, and comprehensive evaluation report.
+                  가장 방전된 <strong>{codeInfo.name}</strong> ({codeInfo.region})에 대한 1:1 맞춤형 코칭이나 심층 전문 상담을 신청해 보시겠습니까?<br />
+                  코칭 또는 상담을 신청하시면 상세 분석 리포트와 3Body 통합 솔루션 가이드, 종합 평가서의 모든 잠금이 해제됩니다.
                 </>
               )}
             </p>
@@ -1067,18 +1099,23 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
             <section className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 rounded-[40px] text-white flex flex-col md:flex-row items-center justify-between gap-6 max-w-4xl mx-auto mt-8 text-left">
               <div className="text-left">
                 <h4 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-indigo-200 mb-2">
-                  📈 {'Track changes on your next assessment'}
+                  📈 {isJa ? '次回測定時の変化を確認する' : (isEn ? 'Track changes on your next assessment' : '다음 측정 시 변화 확인하기')}
                 </h4>
                 <p className="text-indigo-200 text-xs font-semibold leading-relaxed mb-4">
-                  {isEn ? (
+                  {isJa ? (
+                    <>
+                      あなたの統合バランス年齢は <strong className="text-amber-400">{safeReport.comprehensiveAge || safeReport.physicalAge || 0} 歳</strong>です。<br/>
+                      履歴データの確認や比較分析ができるモバイルアプリは、近日中に提供される予定です。
+                    </>
+                  ) : isEn ? (
                     <>
                       Your integrated balance age is <strong className="text-amber-400">{safeReport.comprehensiveAge || safeReport.physicalAge || 0} years</strong>.<br/>
                       Link with our mobile app (coming soon) to track historical progress and comparison charts.
                     </>
                   ) : (
                     <>
-                      Your integrated balance age is <strong className="text-amber-400">{safeReport.comprehensiveAge || safeReport.physicalAge || 0} years</strong>.<br/>
-                      Link with our mobile app (coming soon) to track historical progress and comparison charts.
+                      회원님의 통합 밸런스 연령은 <strong className="text-amber-400">{safeReport.comprehensiveAge || safeReport.physicalAge || 0} 세</strong>입니다.<br/>
+                      이력 관리와 비교 분석 그래프를 볼 수 있는 전용 모바일 앱이 곧 출시될 예정입니다.
                     </>
                   )}
                 </p>
@@ -1100,15 +1137,20 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
                   <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest block mb-0.5">CodeMap App</span>
                   <span className="text-sm font-black text-slate-900 block leading-tight">{'CodeMap App (Coming Soon)'}</span>
                   <span className="text-[10.5px] text-slate-500 font-medium block mt-1.5 leading-snug">
-                    {isEn ? (
+                    {isJa ? (
+                      <>
+                        専用の履歴追跡アプリがまもなくリリースされます。<br/>
+                        リリース後、App Store / Play Storeよりダウンロードいただけます。
+                      </>
+                    ) : isEn ? (
                       <>
                         Historical tracking app is coming soon.<br/>
                         You will be able to find it in the App Store upon release.
                       </>
                     ) : (
                       <>
-                        The dedicated history tracking app will be available soon.<br/>
-                        Available on App Store / Play Store after launch.
+                        측정 데이터 이력 관리 전용 앱이 곧 제공될 예정입니다.<br/>
+                        출시 후 앱스토어 및 플레이스토어에서 다운로드 가능합니다.
                       </>
                     )}
                   </span>
@@ -1124,17 +1166,21 @@ const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, images, onRes
         {/* ⚠️ Legal disclaimer (healthcare law compliance) */}
         <div className="mt-8 mb-2 px-6 py-4 bg-amber-50 border border-amber-200 rounded-2xl text-center print:block">
           <p className="text-amber-800 text-xs font-bold mb-1">
-            ⚠️ {BRAND_NAME} {'Wellness Information & Disclaimer'}
+            ⚠️ {BRAND_NAME} {isJa ? 'ウェルネス情報＆免責事項' : (isEn ? 'Wellness Information & Disclaimer' : '웰니스 정보 및 면책 고지')}
           </p>
           <p className="text-amber-700 text-[10.5px] leading-relaxed">
-            {isEn ? (
+            {isJa ? (
+              <>
+                本スクリーニングは、セルフケアのために体型バランスと気血エネルギーの循環状態を確認する<strong>ウェルネス測定指標</strong>です。<br />
+                医療機器による分析や医師의 치료 행위에 해당하지 않습니다. 疾患の予防や医学的な診断・処方を目的としたものではありません。<br />
+                医学的な判断や治療が必要な筋肉の痛み、認知的な不調などがある場合は、速やかに医療機関を受診することをお勧めします。
+              </>
+            ) : isEn ? (
               'This screening is a wellness guide to evaluate posture and energy flow for self-care. It is NOT medical diagnosis, advice, or therapy under medical laws. It does not replace medical consultation. For diagnostic concerns or persistent pain, consult a healthcare provider.'
             ) : (
               <>
-                This report is a <strong>wellness screening indicator</strong> designed to help identify body balance and qi/blood flow status for self-care.{' '}
-                It does <strong>not</strong> constitute a medical device analysis or medical treatment.<br />
-                This report is not a substitute for disease prevention, medical diagnosis, or treatment.{' '}
-                If you experience musculoskeletal pain or cognitive issues requiring medical attention, we strongly recommend consulting a licensed medical professional.
+                본 스크리닝은 셀프케어를 돕기 위해 체형 밸런스와 기혈 순환 상태를 점검하는 <strong>웰니스 측정 지표</strong>이며, 의료기기 분석이나 의료적 치료 행위에 해당하지 않습니다.<br />
+                질병 예방 및 의학적 진단과 처방을 대신할 수 없으며, 의학적 판단과 치료가 필요한 근골격계 통증이나 인지적 기능 이상 시 전문 의료기관의 진료를 받으실 것을 강력히 권장합니다.
               </>
             )}
           </p>

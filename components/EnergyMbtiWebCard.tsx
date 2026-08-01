@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ENERGY_MBTI_DATA, EnergyMbtiDetail } from '@shared/ai/scoring/mbti';
+import i18n from '../i18n';
 
 const characterImages: Record<string, string> = {
   peag_aura_monarch: './assets/images/characters/peag_aura_monarch.png',
@@ -37,6 +38,10 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
 }) => {
   const [selectedCode, setSelectedCode] = useState<string>(mbtiCode);
   const [viewMode, setViewMode] = useState<'detail' | 'list'>('detail');
+
+  const lang = i18n.language || 'ko';
+  const isEn = lang.startsWith('en');
+  const isJa = lang.startsWith('ja');
 
   const cardData: EnergyMbtiDetail | undefined = ENERGY_MBTI_DATA[selectedCode];
 
@@ -76,7 +81,7 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
             </span>
             {testDate && (
               <span className="text-[10px] text-slate-500 font-bold">
-                Measured: {testDate}
+                {isJa ? `測定日: ${testDate}` : (isEn ? `Measured: ${testDate}` : `측정일: ${testDate}`)}
               </span>
             )}
           </div>
@@ -87,7 +92,11 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
               "{cardData.summary}"
             </p>
             <p className="text-slate-400 text-xs font-medium mt-1 leading-relaxed">
-              * Detailed temperament analysis and daily energy guide will be unlocked during professional counseling (detailed report).
+              {isJa 
+                ? '* 詳細な気質分析とデイリーエネルギーガイドは、専門家によるカウンセリング（詳細レポート）にてアンロックされます。'
+                : (isEn 
+                  ? '* Detailed temperament analysis and daily energy guide will be unlocked during professional counseling (detailed report).' 
+                  : '* 상세 기질 분석과 데일리 에너지 가이드는 전문가 상담(상세 레포트) 시 잠금 해제됩니다.')}
             </p>
           </div>
         </div>
@@ -103,10 +112,12 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
           {/* 상단 뱃지 라인 */}
           <div className="flex items-center justify-between p-5 border-b border-slate-100">
             <span className="text-indigo-600 text-xs font-black tracking-widest uppercase">
-              🔮 Energy Type Snapshot
+              {isJa ? '🔮 エネルギータイプスナップショット' : (isEn ? '🔮 Energy Type Snapshot' : '🔮 에너지 유형 요약')}
             </span>
             <span className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100">
-              {selectedCode === mbtiCode && testDate ? `Measured: ${testDate}` : 'Encyclopedia View'}
+              {selectedCode === mbtiCode && testDate 
+                ? (isJa ? `測定日: ${testDate}` : (isEn ? `Measured: ${testDate}` : `측정일: ${testDate}`)) 
+                : (isJa ? 'エネルギー図鑑' : (isEn ? 'Encyclopedia View' : '유형 도감 조회'))}
             </span>
           </div>
 
@@ -151,7 +162,7 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
               {/* 과학적 분석 */}
               <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                 <h5 className="text-slate-900 font-black text-sm mb-2 flex items-center gap-1.5">
-                  <span>🧬</span> 3-Body & 7-Code Analysis
+                  <span>🧬</span> {isJa ? '🧬 3ボディ＆7コード分析' : (isEn ? '🧬 3-Body & 7-Code Analysis' : '🧬 3Body & 7코드 분석')}
                 </h5>
                 <p className="text-slate-600 text-xs font-medium leading-relaxed">{cardData.threeBodyAnalysis}</p>
               </div>
@@ -159,7 +170,7 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
               {/* 에너지 흐름 조언 */}
               <div className="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100/50">
                 <h5 className="text-slate-900 font-black text-sm mb-2 flex items-center gap-1.5">
-                  <span>🃏</span> Daily Energy Fortune
+                  <span>🃏</span> {isJa ? '🃏 デイリーエネルギー運勢' : (isEn ? '🃏 Daily Energy Fortune' : '🃏 데일리 에너지 운세')}
                 </h5>
                 <p className="text-slate-600 text-xs font-medium leading-relaxed">{cardData.energyFortune}</p>
               </div>
@@ -167,10 +178,10 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
               {/* 럭키 처방전 */}
               <div className="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100/50">
                 <h5 className="text-slate-900 font-black text-sm mb-2 flex items-center gap-1.5">
-                  <span>⚡</span> Lucky Energy Prescription
+                  <span>⚡</span> {isJa ? '⚡ ラッキーエネルギー処方箋' : (isEn ? '⚡ Lucky Energy Prescription' : '⚡ 럭키 에너지 처방전')}
                 </h5>
                 <p className="text-slate-650 text-xs font-black leading-relaxed">
-                  💡 Suggested Carry & Training: <span className="text-emerald-700 font-bold">{cardData.luckyPrescription}</span>
+                  {isJa ? '💡 推奨アイテム＆トレーニング: ' : (isEn ? '💡 Suggested Carry & Training: ' : '💡 추천 소지품 & 수련: ')}<span className="text-emerald-700 font-bold">{cardData.luckyPrescription}</span>
                 </p>
               </div>
             </div>
@@ -182,14 +193,14 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
                   onClick={() => setSelectedCode(mbtiCode)}
                   className="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3.5 rounded-2xl transition-all text-sm border border-emerald-200"
                 >
-                  👤 View My Energy Type
+                  {isJa ? '👤 私のエネルギータイプを見る' : (isEn ? '👤 View My Energy Type' : '👤 나의 에너지 유형 보기')}
                 </button>
               ) : (
                 <button
                   onClick={() => setViewMode('list')}
                   className="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-3.5 rounded-2xl transition-all text-sm border border-indigo-200"
                 >
-                  📖 16 Temperament Encyclopedia
+                  {isJa ? '📖 16エネルギータイプ図鑑' : (isEn ? '📖 16 Temperament Encyclopedia' : '📖 16가지 에너지 도감')}
                 </button>
               )}
             </div>
@@ -199,7 +210,7 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
                 onClick={onClose}
                 className="w-full mt-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-2xl transition-all text-sm border border-slate-200"
               >
-                Close Report
+                {isJa ? 'レポートを閉じる' : (isEn ? 'Close Report' : '결과 닫기')}
               </button>
             )}
           </div>
@@ -208,17 +219,21 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
         /* 백과도감 격자 목록 뷰 */
         <div className="p-6 flex flex-col h-[75vh]">
           <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-100">
-            <h3 className="text-slate-900 font-black text-lg">📖 16 Energy Types Encyclopedia</h3>
+            <h3 className="text-slate-900 font-black text-lg">{isJa ? '📖 16エネルギータイプ図鑑' : (isEn ? '📖 16 Energy Types Encyclopedia' : '📖 16가지 에너지 유형 도감')}</h3>
             <button
               onClick={() => setViewMode('detail')}
               className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-xl border border-slate-200 text-xs transition-colors"
             >
-              Back to Detail →
+              {isJa ? '詳細に戻る →' : (isEn ? 'Back to Detail →' : '상세 보기로 돌아가기 →')}
             </button>
           </div>
           
           <p className="text-slate-550 text-xs font-medium leading-relaxed mb-5">
-            Feel free to browse all energy temperaments and personalized 3-body guidelines.
+            {isJa 
+              ? 'すべてのエネルギー気質とパーソナライズされた3ボディガイドラインをご自由にご覧ください。' 
+              : (isEn 
+                ? 'Feel free to browse all energy temperaments and personalized 3-body guidelines.' 
+                : '16가지 모든 에너지 기질 유형과 나만의 3Body 솔루션 가이드를 자유롭게 둘러보세요.')}
           </p>
 
           <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[50vh] custom-scrollbar grid grid-cols-2 gap-3 pb-4">
@@ -245,7 +260,7 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
                     )}
                     {isMyType && (
                       <span className="absolute bottom-0 inset-x-0 bg-emerald-500 text-white text-[8px] font-black text-center py-0.5">
-                        My Type
+                        {isJa ? 'マイタイプ' : (isEn ? 'My Type' : '나의 유형')}
                       </span>
                     )}
                   </div>
@@ -261,7 +276,7 @@ export const EnergyMbtiWebCard: React.FC<EnergyMbtiWebCardProps> = ({
               onClick={onClose}
               className="w-full mt-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-2xl transition-all text-sm border border-slate-200 shrink-0"
             >
-              Close Report
+              {isJa ? 'レポートを閉じる' : (isEn ? 'Close Report' : '결과 닫기')}
             </button>
           )}
         </div>

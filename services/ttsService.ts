@@ -28,8 +28,9 @@ export const preloadTTS = async (texts: string[]) => {
   if (!apiKey && !isWebMode()) return;
   if (Date.now() < quotaExceededUntil) return;
 
-  const isEnglish = i18n.language ? i18n.language.startsWith('en') : false;
-  const isJapanese = i18n.language ? i18n.language.startsWith('ja') : true;
+  // 일본 지점 서비스이므로 일본어 음성으로 고정합니다.
+  const isEnglish = false;
+  const isJapanese = true;
 
   for (const text of texts) {
     if (audioCache[text]) continue;
@@ -106,20 +107,11 @@ export const stopSpeaking = () => {
   }
 };
 
-export const speak = async (text: string) => {
-  stopSpeaking();
-  const thisSpeechId = currentSpeechId;
-  const speechText = text.trim();
-
-  // 1. Play native voice via browser SpeechSynthesis
+// 로컬 브라우저 SpeechSynthesis 재생 헬퍼 함수
+const playNativeSpeech = (speechText: string) => {
   if ('speechSynthesis' in window) {
-    const currentLang = i18n.language || 'ja';
-    let speakLang = 'ja-JP';
-    if (currentLang.startsWith('en')) {
-      speakLang = 'en-US';
-    } else if (currentLang.startsWith('ko')) {
-      speakLang = 'ko-KR';
-    }
+    const currentLang = 'ja';
+    const speakLang = 'ja-JP';
     
     console.log(`[TTS] Playing native ${speakLang} SpeechSynthesis for text: "${speechText}"`);
     const utterance = new SpeechSynthesisUtterance(speechText);
@@ -133,23 +125,36 @@ export const speak = async (text: string) => {
     
     window.speechSynthesis.speak(utterance);
   }
+};
 
-  // 2. Play via premium Gemini AI Voice if active and cached
-  try {
-    if (audioCache[speechText]) {
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-      playBase64Audio(audioCache[speechText]);
-      return;
-    }
+export const speak = async (text: string) => {
+  stopSpeaking();
+  const thisSpeechId = currentSpeechId;
+  const speechText = text.trim();
 
-    if (Date.now() >= quotaExceededUntil && (isWebMode() || process.env.GEMINI_API_KEY) && !isPendingRequest) {
+  // 1. 이미 캐시에 음성이 존재한다면, 로컬 재생 없이 즉시 프리미엄 음성만 재생
+  if (audioCache[speechText]) {
+    playBase64Audio(audioCache[speechText]);
+    return;
+  }
+
+  // 2. 프리미엄 TTS 시도가 가능한 조건인 경우
+  const isPremiumAvailable = Date.now() >= quotaExceededUntil && (isWebMode() || getActiveApiKey()) && !isPendingRequest;
+
+  if (isPremiumAvailable) {
+    try {
       const success = await fetchAndPlayText(speechText, thisSpeechId);
       if (success && currentSpeechId === thisSpeechId) {
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        return;
       }
+    } catch (error) {
+      console.error("Premium TTS Error, falling back to native:", error);
     }
-  } catch (error) {
-    console.error("Premium TTS Error:", error);
+  }
+
+  // 3. 프리미엄이 불가능하거나 실패한 경우 폴백으로 로컬 브라우저 음성 1회 재생
+  if (currentSpeechId === thisSpeechId) {
+    playNativeSpeech(speechText);
   }
 };
 
@@ -157,8 +162,9 @@ const fetchAndPlayText = async (text: string, speechId: number): Promise<boolean
   const apiKey = getActiveApiKey();
   if (!apiKey && !isWebMode()) return false;
   
-  const isEnglish = i18n.language ? i18n.language.startsWith('en') : false;
-  const isJapanese = i18n.language ? i18n.language.startsWith('ja') : true;
+  // 일본 지점 서비스이므로 일본어 음성으로 고정합니다.
+  const isEnglish = false;
+  const isJapanese = true;
 
   isPendingRequest = true;
   try {

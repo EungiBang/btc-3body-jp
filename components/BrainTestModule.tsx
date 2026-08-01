@@ -1091,8 +1091,8 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
   };
 
   const showMartItems = (items: typeof MART_ITEMS) => {
-    setMartMessage(`🛒 Memorize these ${MART_ITEMS_TO_REMEMBER} items and their prices for 20 seconds!`);
-    speak(`Please memorize these 8 items and their prices displayed on the screen for 20 seconds.`);
+    setMartMessage(`🛒 8つの商品とその価格を20秒間暗記してください！`);
+    speak(`画面に表示された8つの商品とその価格を20秒間覚えてください。`);
     setMartShowingCountdown(20); // v5.1: 20초
     const showInterval = setInterval(() => {
       setMartShowingCountdown(prev => {
@@ -1106,8 +1106,8 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
           setDistractionCorrect(0);
           setDistractionCountdown(15);
           setMartPhase('distraction');
-          setMartMessage('🧠 Try to solve 2 math quizzes in 15 seconds!');
-          speak("Now, solve 2 math quizzes in 15 seconds.");
+          setMartMessage('🧠 15秒以内に2つの計算問題を解いてください！');
+          speak("それでは、15秒以内に2つの計算問題を解いてください。");
           return 0;
         }
         return prev - 1;
@@ -1167,9 +1167,9 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
     setMartPhase('priceQuiz');
     
     const isEnglish = true;
-    const formattedCorrect = `$${(correctPrice / 1000).toLocaleString()}`;
+    const formattedCorrect = `¥${(correctPrice / 10).toLocaleString()}`;
     
-    speak(`Shopping completed. You matched ${cc} out of 8 items. Now, try to guess the total price of the items whose prices were displayed.`);
+    speak(`お買い物が完了しました。8つの商品のうち${cc}個正解です。それでは、価格が表示されていた商品の合計金額を当ててみてください。`);
   };
 
   useEffect(() => {
@@ -1224,9 +1224,9 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
     
     const isEnglish = true;
     const userPriceRaw = parseInt(mathInputValue);
-    const userPrice = userPriceRaw * 1000;
+    const userPrice = userPriceRaw * 10;
     
-    // 오차 ±500원 이내면 정답 처리
+    // 오차 ±50엔 이내면 정답 처리
     const ok = Math.abs(userPrice - mathCorrectAnswer) <= 500;
     setMathIsCorrect(ok);
 
@@ -1263,11 +1263,11 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
       mathTime
     }));
     
-    const formattedAnswer = `$${(mathCorrectAnswer / 1000).toLocaleString()}`;
+    const formattedAnswer = `¥${(mathCorrectAnswer / 10).toLocaleString()}`;
       
     speak(ok 
-      ? "Correct!" 
-      : `Incorrect. The correct answer is ${formattedAnswer}.`);
+      ? "正解です！" 
+      : `不正解です。正解は ${formattedAnswer} です。`);
     setTimeout(() => setPhase('result'), 2500);
   };
 
@@ -1297,7 +1297,7 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
   const getTestTitle = () => {
     switch (testType) {
       case ('BRAIN_REACTION' as any): return { icon: '🧠', title: "Cognitive Reaction Test", subtitle: "Raise the indicated hand depending on color" };
-      case AssessmentStep.BRAIN_MEMORY: return { icon: '🛒', title: "Brain Memory Test", subtitle: "Memorize items and prices to test cognitive load" };
+      case AssessmentStep.BRAIN_MEMORY: return { icon: '🛒', title: "脳の健康 (買い物記憶)", subtitle: "商品と価格を覚えて認知負荷をテストします" };
       default: return { icon: '🧠', title: "Cognitive Assessment", subtitle: '' };
     }
   };
@@ -1399,8 +1399,8 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
 
                 {testType === AssessmentStep.BRAIN_MEMORY && (
                   <>
-                    <p className="text-base sm:text-lg">🛒 Remember the 8 grocery items and their prices.</p>
-                    <p className="text-base sm:text-lg">🧩 Solve the distraction quizzes, and then select the items and guess their total price.</p>
+                    <p className="text-base sm:text-lg">🛒 8つの商品とその価格を覚えてください。</p>
+                    <p className="text-base sm:text-lg">🧩 計算問題を解いた後、選んだ商品の合計金額を当てます。</p>
                   </>
                 )}
               </div>
@@ -1664,7 +1664,7 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
                   <div className={`w-full ${isPortraitMode ? 'max-w-xl px-3' : 'max-w-4xl px-2 sm:px-4'}`}>
                     {/* 안내 + 타이머 */}
                     <div className={`flex items-center justify-between bg-black/50 backdrop-blur-sm border border-white/10 mb-4 sm:mb-6 rounded-2xl sm:rounded-3xl px-4 sm:px-8 py-3 sm:py-5`}>
-                      <span className="text-white font-bold text-sm sm:text-xl">🛒 Memorize the 8 items and their prices</span>
+                      <span className="text-white font-bold text-sm sm:text-xl">🛒 8つの商品とその価格を覚えてください</span>
                       <span className={`font-black ml-3 text-xl sm:text-3xl ${martShowingCountdown <= 5 ? 'text-rose-400 animate-pulse' : 'text-amber-400'}`}>
                         ⏱️ {martShowingCountdown}s
                       </span>
@@ -1679,7 +1679,7 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
                             <span className={`${isPortraitMode ? 'text-5xl' : 'text-4xl sm:text-6xl'}`}>{item.emoji}</span>
                             {showPrice ? (
                               <span className={`text-amber-300 font-black mt-2 ${isPortraitMode ? 'text-base' : 'text-sm sm:text-lg'}`}>
-                                {`$${(item.price / 1000).toLocaleString()}`}
+                                {`¥${(item.price / 10).toLocaleString()}`}
                               </span>
                             ) : (
                               <span className={`text-white/30 font-bold mt-2 ${isPortraitMode ? 'text-sm' : 'text-xs sm:text-sm'}`}>???</span>
@@ -1756,7 +1756,7 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
                     <div className="bg-gradient-to-br from-amber-600/40 to-orange-600/40 border-amber-400/50 backdrop-blur-xl rounded-2xl sm:rounded-3xl border-2 p-3 max-w-5xl w-full flex flex-col transition-all">
                       <div className="flex items-center gap-3 sm:gap-4">
                         <span className="text-xl sm:text-2xl">🛒</span>
-                        <span className="text-white font-black flex-1 text-base sm:text-lg">Shopping Cart</span>
+                        <span className="text-white font-black flex-1 text-base sm:text-lg">ショッピングカート</span>
                         <span className="text-amber-300 font-black text-lg sm:text-xl">{cartItems.length}/{MART_ITEMS_TO_REMEMBER}</span>
                       </div>
                       <div className="w-full h-px bg-white/20 my-2"></div>
@@ -1764,7 +1764,7 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
                         {cartItems.length === 0 ? (
                           <div className="w-full flex flex-col items-center justify-center opacity-40 py-1 gap-1">
                             <span className="text-xl sm:text-2xl">👆</span>
-                            <span className="text-white font-bold text-center text-xs sm:text-sm">Touch items to put them in the cart.</span>
+                            <span className="text-white font-bold text-center text-xs sm:text-sm">商品をタッチしてカートに入れてください。</span>
                           </div>
                         ) : cartItems.map(id => { 
                           const it = MART_ITEMS.find(i => i.id === id); 
@@ -1791,7 +1791,7 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
                       <span className="text-4xl sm:text-5xl">🧮</span>
                       <div className={`text-xl sm:text-2xl font-black px-4 py-2 rounded-full ${mathTimeLeft <= 10 ? 'bg-red-500/80 text-white animate-pulse' : 'bg-white/10 text-white'}`}>⏱️ {mathTimeLeft}s</div>
                     </div>
-                    <h3 className="text-white font-black text-xl sm:text-2xl mb-5">Guess the total price of items displayed:</h3>
+                    <h3 className="text-white font-black text-xl sm:text-2xl mb-5">表示された商品の合計金額を当ててください。</h3>
                     <div className="flex gap-4 justify-center mb-6">
                       {mathPriceItems.map(item => {
                         return (
@@ -1812,7 +1812,7 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
                           value={mathInputValue}
                           onChange={e => setMathInputValue(e.target.value)}
                           onKeyDown={e => e.key === 'Enter' && handleMathSubmit()}
-                          placeholder="Enter total price (ex: 12)"
+                          placeholder="合計金額を入力してください (例: 1200)"
                           className="w-48 text-center text-xl font-black bg-white/10 border-2 border-amber-400/50 rounded-2xl py-4 text-white placeholder-white/30 focus:outline-none focus:border-amber-400 focus:bg-white/15 transition-all"
                           autoFocus
                         />
@@ -1829,17 +1829,17 @@ const BrainTestModule: React.FC<BrainTestModuleProps> = ({ testType, onComplete,
                       <div className="mt-3">
                         <p className={`text-xl font-black ${mathIsCorrect ? 'text-emerald-400' : 'text-red-400'}`}>
                           {mathIsCorrect 
-                            ? "🎉 Correct!" 
-                            : `❌ Correct Price: $${(mathCorrectAnswer / 1000).toLocaleString()}`
+                            ? "🎉 正解です！" 
+                            : `❌ 正解: ¥${(mathCorrectAnswer / 10).toLocaleString()}`
                           }
                         </p>
                         {!mathIsCorrect && mathInputValue && (() => {
                           const inputValueParsed = parseInt(mathInputValue) || 0;
-                          const inputFormatted = `$${inputValueParsed.toLocaleString()}`;
-                          const diffFormatted = `$${(Math.abs(inputValueParsed * 1000 - mathCorrectAnswer) / 1000).toLocaleString()}`;
+                          const inputFormatted = `¥${inputValueParsed.toLocaleString()}`;
+                          const diffFormatted = `¥${(Math.abs(inputValueParsed * 10 - mathCorrectAnswer) / 10).toLocaleString()}`;
                           return (
                             <p className="text-white/50 text-sm mt-1">
-                              Your Input: {inputFormatted} (Difference: {diffFormatted})
+                              入力値: {inputFormatted} (差額: {diffFormatted})
                             </p>
                           );
                         })()}
