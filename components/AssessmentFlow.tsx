@@ -80,7 +80,11 @@ const resizeImage = (dataUrl: string, maxWidth = 400): Promise<string> => {
 let cachedMoveNetDetector: any = null;
 
 const AssessmentFlow: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || 'ko';
+  const isEn = lang.startsWith('en');
+  const isJa = lang.startsWith('ja');
+
   const [step, setStep] = useState<AssessmentStep | 'HISTORY'>(AssessmentStep.INTRO);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([]);
@@ -1646,20 +1650,44 @@ const AssessmentFlow: React.FC = () => {
             <div className="relative w-24 h-24 mb-8">
               <div className="absolute inset-0 rounded-full border-4 border-indigo-500/20"></div>
               <div className="absolute inset-0 rounded-full border-4 border-t-indigo-500 animate-spin"></div>
-              <div className="absolute inset-2 bg-slate-900 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-black text-indigo-400">
-                  <i className="fas fa-brain animate-pulse"></i>
+              <div className="absolute inset-2 bg-slate-900 rounded-full flex flex-col items-center justify-center">
+                <i className="fas fa-brain animate-pulse text-indigo-400 text-lg mb-1"></i>
+                <span className="text-sm font-black text-white">
+                  {Math.round(analyzeProgress)}%
                 </span>
               </div>
             </div>
-            <h3 className="text-3xl font-black text-white mb-4 tracking-tight">AIデータを分析中...</h3>
+            <h3 className="text-3xl font-black text-white mb-4 tracking-tight">
+              {isJa ? 'AIデータを分析中...' : (isEn ? 'Analyzing AI Data...' : 'AI 데이터를 분석 중...')}
+            </h3>
             <p className="text-slate-400 max-w-md mx-auto text-base leading-relaxed font-medium mt-4">
-              <span className="block text-indigo-200 mb-2 font-bold bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20">
-                このプログラムは、最新のAI技術を統合し、脳トレーニングセンター、研究所、大学の専門家によって研究・開発されました。<br/>
-                <span className="text-[11px] text-indigo-300 mt-1 block">※ 本システムは、健康管理を支援するために姿勢、動き、記憶を測定するウェルネスプログラムであり、医療診断を目的としたものではありません。</span>
+              <span className="block text-indigo-200 mb-2 font-bold bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20 text-xs">
+                {isJa ? (
+                  <>
+                    このプログラムは、最新의 AI技術を統合し、脳トレーニングセンター、研究所、大学の専門家によって研究・開発されました。<br/>
+                    <span className="text-[11px] text-indigo-300 mt-1 block">※ 本システムは、健康管理を支援するために姿勢、動き、記憶を測定するウェルネスプログラムであり、医療診断を目的としたものではありません。</span>
+                  </>
+                ) : isEn ? (
+                  <>
+                    This program integrates the latest AI technology and was researched and developed by experts from brain training centers, research institutes, and universities.<br/>
+                    <span className="text-[11px] text-indigo-300 mt-1 block">* This system is a wellness program that measures posture, movement, and memory to support health management, and is not intended for medical diagnosis.</span>
+                  </>
+                ) : (
+                  <>
+                    본 프로그램은 최신 AI 기술을 통합하여 뇌훈련센터, 연구소, 대학의 전문가들에 의해 연구·개발되었습니다.<br/>
+                    <span className="text-[11px] text-indigo-300 mt-1 block">※ 본 시스템은 건강 관리를 지원하기 위해 자세, 움직임, 기억을 측정하는 웰니스 프로그램이며, 의료 진단을 목적으로 하지 않습니다.</span>
+                  </>
+                )}
               </span>
-              3Body測定モデルが、収集された身体データと運動データをマルチアングルで包括的に分析しています。<br/>
-              <span className="text-indigo-400 mt-2 inline-block text-sm">約1分かかります。</span>
+              {isJa 
+                ? '3Body測定モデルが、収集された身体データと運動データをマルチアングルで包括的に分析しています。'
+                : (isEn 
+                  ? 'The 3Body measurement model comprehensively analyzes the collected physical and movement data from multiple angles.' 
+                  : '3Body 측정 모델이 수집된 신체 데이터와 운동 데이터를 멀티 앵글로 포괄적으로 분석하고 있습니다.')}
+              <br/>
+              <span className="text-indigo-400 mt-2 inline-block text-sm">
+                {isJa ? '約30秒かかります。' : (isEn ? 'It takes about 30 seconds.' : '약 30초 정도 소요됩니다.')}
+              </span>
             </p>
           </div>
         );
