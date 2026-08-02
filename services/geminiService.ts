@@ -1468,7 +1468,7 @@ ${fewShotPrompt}
 
   try {
     const response = await callGeminiProxy(
-      "gemini-3-flash-preview",
+      "gemini-1.5-flash",
       [{ parts: [{ text: prompt }] }],
       {
         responseMimeType: "application/json",
