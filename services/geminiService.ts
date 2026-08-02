@@ -54,7 +54,7 @@ const callGeminiProxy = async (
 export const checkEnvironment = async (imageDataUrl: string): Promise<{ isValid: boolean; message: string }> => {
   try {
     const result = await callGeminiProxy(
-      'gemini-1.5-flash',
+      'gemini-3.5-flash',
       {
         parts: [
           { inlineData: { mimeType: 'image/jpeg', data: imageDataUrl.split(',')[1] } },
@@ -865,7 +865,7 @@ ${hasReactionTest ? `  - 脳認知反応: (Speed: ${reactionTimeMs}ms, エラー
         console.log(`[Gemini] 분석 시도 ${attempt + 1}/${MAX_RETRIES}...`);
         
         const apiCall = callGeminiProxy(
-          'gemini-1.5-flash',
+          'gemini-3.5-flash',
           { parts: [...parts, { text: prompt }] },
           {
             responseMimeType: "application/json",
@@ -1468,7 +1468,7 @@ ${fewShotPrompt}
 
   try {
     const response = await callGeminiProxy(
-      "gemini-1.5-flash",
+      "gemini-3.5-flash",
       [{ parts: [{ text: prompt }] }],
       {
         responseMimeType: "application/json",
@@ -1564,7 +1564,7 @@ export const analyzeTarot = async (
 
   try {
     const response = await callGeminiProxy(
-      'gemini-1.5-flash',
+      'gemini-3.5-flash',
       [{ parts: [{ text: prompt }] }],
     );
     const text = response.text;
