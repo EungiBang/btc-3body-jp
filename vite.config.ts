@@ -54,6 +54,8 @@ export default defineConfig(({ mode }) => {
                       requestBody.generationConfig = {};
                       if (genConfig.responseMimeType) requestBody.generationConfig.responseMimeType = genConfig.responseMimeType;
                       if (genConfig.responseSchema) requestBody.generationConfig.responseSchema = genConfig.responseSchema;
+                      if (genConfig.responseModalities) requestBody.generationConfig.responseModalities = genConfig.responseModalities;
+                      if (genConfig.speechConfig) requestBody.generationConfig.speechConfig = genConfig.speechConfig;
                     }
 
                     const response = await fetch(geminiUrl, {
@@ -76,6 +78,7 @@ export default defineConfig(({ mode }) => {
                     res.end(JSON.stringify({
                       text: part?.text || null,
                       inlineData: part?.inlineData || null,
+                      candidates: data.candidates,
                     }));
                   } catch (e: any) {
                     res.statusCode = 500;
