@@ -3,17 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserInfo, MemberRecord } from '../types';
 import { getRecordsLocally } from '../services/localDb';
+import { toHalfWidth } from '../utils/stringUtils';
 
 interface UserInfoFormProps {
   onSubmit: (info: UserInfo) => void;
 }
 
-// 전각 숫자를 반각 숫자로 변환하는 유틸리티 함수
-const toHalfWidth = (str: string): string => {
-  return str.replace(/[０-９]/g, (s) => {
-    return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
-  });
-};
 
 const UserInfoForm: React.FC<UserInfoFormProps> = ({ onSubmit }) => {
   const { t } = useTranslation();

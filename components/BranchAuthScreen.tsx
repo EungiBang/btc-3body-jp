@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getRegions, getBranches, requestDeviceRegistration, Region, Branch } from '../services/firebaseAuthService';
 import pkg from '../package.json';
+import { toHalfWidth } from '../utils/stringUtils';
 
 interface BranchAuthProps {
   onVerified: () => void;
@@ -51,18 +52,23 @@ const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
     }
   }, [formData.regionId, branches]);
 
-  // 미국식 전화번호 포맷: (000) 000-0000
+  // 일본/한국식 전화번호 포맷: 090-0000-0000
   const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value.replace(/[^0-9]/g, '');
-    if (val.length > 10) val = val.slice(0, 10);
-    if (val.length > 6) {
-      val = `(${val.slice(0, 3)}) ${val.slice(3, 6)}-${val.slice(6)}`;
-    } else if (val.length > 3) {
-      val = `(${val.slice(0, 3)}) ${val.slice(3)}`;
-    } else if (val.length > 0) {
-      val = `(${val}`;
+    const rawVal = toHalfWidth(e.target.value);
+    const nums = rawVal.replace(/[^0-9]/g, '');
+    let val = nums;
+    if (nums.length > 11) {
+      val = nums.slice(0, 11);
     }
-    setFormData(prev => ({ ...prev, contact: val }));
+    
+    let formatted = val;
+    if (val.length > 7) {
+      formatted = `${val.slice(0, 3)}-${val.slice(3, 7)}-${val.slice(7)}`;
+    } else if (val.length > 3) {
+      formatted = `${val.slice(0, 3)}-${val.slice(3)}`;
+    }
+    
+    setFormData(prev => ({ ...prev, contact: formatted }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -163,11 +169,11 @@ const BranchAuthScreen: React.FC<BranchAuthProps> = ({ onVerified }) => {
           </div>
           <div>
             <label className="block text-xs font-bold text-slate-400 mb-1.5 ml-1">{t('branchAuth.contact')}</label>
-            <input type="text" className="w-full px-4 py-3.5 bg-slate-900/50 border border-slate-600/50 text-white rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600" placeholder="(000) 000-0000" value={formData.contact} onChange={handleContactChange} maxLength={14} />
+            <input type="text" className="w-full px-4 py-3.5 bg-slate-900/50 border border-slate-600/50 text-white rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-600" placeholder="090-0000-0000" value={formData.contact} onChange={handleContactChange} maxLength={13} />
           </div>
           <div>
             <label className="block text-xs font-bold text-indigo-400 mb-1.5 ml-1">{t('branchAuth.authCode')}</label>
-            <input type="password" className="w-full px-4 py-3.5 bg-indigo-950/30 border border-indigo-500/30 text-white rounded-xl focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none font-bold tracking-widest transition-all placeholder:text-indigo-900/50" placeholder={t('branchAuth.authCodePlaceholder')} value={formData.authCode} onChange={e => setFormData({...formData, authCode: e.target.value})} />
+            <input type="password" className="w-full px-4 py-3.5 bg-indigo-950/30 border border-indigo-500/30 text-white rounded-xl focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 outline-none font-bold tracking-widest transition-all placeholder:text-indigo-900/50" placeholder={t('branchAuth.authCodePlaceholder')} value={formData.authCode} onChange={e => setFormData({...formData, authCode: toHalfWidth(e.target.value)})} />
           </div>
 
           {error && (
