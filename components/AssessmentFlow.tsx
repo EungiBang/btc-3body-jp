@@ -76,6 +76,9 @@ const resizeImage = (dataUrl: string, maxWidth = 400): Promise<string> => {
   });
 };
 
+// 전역 캐시용 MoveNet 디텍터 인스턴스 (메모리 재사용으로 속도 극대화)
+let cachedMoveNetDetector: any = null;
+
 const AssessmentFlow: React.FC = () => {
   const { t } = useTranslation();
   const [step, setStep] = useState<AssessmentStep | 'HISTORY'>(AssessmentStep.INTRO);
@@ -421,14 +424,20 @@ const AssessmentFlow: React.FC = () => {
           await import('@tensorflow/tfjs-backend-webgl');
           const poseDetection = await import('@tensorflow-models/pose-detection');
           
-          // Create model
+          // Create model or reuse cached detector
           let detector: any;
           try {
-            detector = await poseDetection.createDetector(
-              poseDetection.SupportedModels.MoveNet,
-              { modelType: (poseDetection as any).movenet.modelType.SINGLEPOSE_THUNDER } // Thunder model for accuracy
-            );
-          } catch {
+            if (cachedMoveNetDetector) {
+              detector = cachedMoveNetDetector;
+            } else {
+              detector = await poseDetection.createDetector(
+                poseDetection.SupportedModels.MoveNet,
+                { modelType: (poseDetection as any).movenet.modelType.SINGLEPOSE_LIGHTNING } // Lightning model for 3-5x faster edge device processing
+              );
+              cachedMoveNetDetector = detector;
+            }
+          } catch (err) {
+            console.error('Failed to create MoveNet detector:', err);
             // Skip validation and pass if model load fails
             setPreviewData(prev => prev ? { ...prev, validationResult: { passed: true, message: '' } } : null);
             return;
@@ -441,7 +450,7 @@ const AssessmentFlow: React.FC = () => {
           ctx.drawImage(img, 0, 0);
           
           const poses = await detector.estimatePoses(canvas);
-          detector.dispose();
+          // 디텍터를 파괴하지 않고 다음 캡처에서 캐시를 통해 재사용합니다.
           
           if (poses.length > 0) {
             const kps = poses[0].keypoints;
