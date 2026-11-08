@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '../server/http-types';
 
 /**
  * Vercel Serverless Function — Gemini API Proxy
@@ -44,14 +44,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { model, contents, config: genConfig } = req.body;
+    const { model, contents, config: genConfig } = req.body || {};
+    if (typeof model !== 'string' || !/^gemini-[a-zA-Z0-9._-]{1,100}$/.test(model)) return res.status(400).json({ error: 'Invalid model' });
 
     if (!model || !contents) {
       return res.status(400).json({ error: 'Missing required fields: model, contents' });
     }
 
     // Gemini REST API 직접 호출
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
 
     const requestBody: any = {
       contents: Array.isArray(contents) ? contents : [contents],
@@ -77,15 +78,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const response = await fetch(geminiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
       body: JSON.stringify(requestBody),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('[Gemini Proxy] API Error:', data);
-      return res.status(response.status).json(data);
+      console.error('[Gemini Proxy] upstream_status', response.status);
+      return res.status(response.status).json({ error: 'AI provider request failed' });
     }
 
     // 응답에서 text 또는 audio 데이터 추출
@@ -100,7 +101,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       candidates: data.candidates, // 필요시 raw 데이터도 전달
     });
   } catch (error: any) {
-    console.error('[Gemini Proxy] Server Error:', error);
-    return res.status(500).json({ error: error.message || 'Internal proxy error' });
+    console.error('[Gemini Proxy] request_failed');
+    return res.status(500).json({ error: 'Internal proxy error' });
   }
 }

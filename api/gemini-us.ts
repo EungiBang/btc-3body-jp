@@ -2,7 +2,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 export default async function handler(req: any, res: any) {
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
@@ -25,7 +25,8 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const { model, contents, config } = req.body;
+    const { model, contents, config } = req.body || {};
+    if (typeof model !== 'string' || !/^gemini-[a-zA-Z0-9._-]{1,100}$/.test(model)) return res.status(400).json({ error: 'Invalid model' });
 
     if (!model || !contents) {
       return res.status(400).json({ error: 'Missing required parameters: model and contents.' });
@@ -43,7 +44,7 @@ export default async function handler(req: any, res: any) {
       text: response.text,
     });
   } catch (error: any) {
-    console.error('Gemini proxy error:', error);
-    return res.status(500).json({ error: error.message || 'Internal error during Gemini API call.' });
+    console.error('Gemini proxy request failed');
+    return res.status(500).json({ error: 'Internal error during Gemini API call.' });
   }
 }
